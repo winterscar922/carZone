@@ -3,12 +3,10 @@ package models
 import (
 	"errors"
 	"time"
-
-	"github.com/google/uuid"
 )
 
 type Car struct {
-	CarId      uuid.UUID `json:"car_id"`
+	CarId      int       `json:"car_id"`
 	Name       string    `json:"name"`
 	Year       time.Time `json:"year"`
 	Brand      string    `json:"brand"`
@@ -93,7 +91,7 @@ func ValidateFuelTypes(fuelType string) error {
 }
 
 func ValidateEngine(engine Engine) error {
-	if engine.EngineId == uuid.Nil {
+	if engine.EngineId == 0 {
 		return errors.New("engine id is required")
 	}
 	if engine.Displacement <= 0 {

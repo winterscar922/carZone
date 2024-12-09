@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/google/uuid"
 	"github.com/winterscar922/carZone/models"
 	engineDataStore "github.com/winterscar922/carZone/store/engine"
 )
@@ -16,7 +15,7 @@ type Store struct {
 	db *sql.DB
 }
 
-func open(db *sql.DB) Store {
+func Open(db *sql.DB) Store {
 	return Store{db: db}
 }
 
@@ -26,7 +25,7 @@ func (s Store) InsertCar(ctx context.Context, carReq models.CarRequest) (models.
 	// verify if engine id is present or not in engine table
 	var engine_id = carReq.Engine.EngineId
 
-	if engine_id != uuid.Nil {
+	if engine_id != 0 {
 		engineStore := engineDataStore.Store{Db: s.db}
 		exists, err := engineStore.CheckEngineById(ctx, engine_id)
 		if err != nil {
@@ -37,12 +36,11 @@ func (s Store) InsertCar(ctx context.Context, carReq models.CarRequest) (models.
 		}
 	}
 
-	query := `insert into car (id, name, year, brand, fuel_type, engine_id, price, created_at, modified_at) 
-	values ($1,$2,$3,$4,$5,$6,$7,$8,$9) 
+	query := `insert into car (name, year, brand, fuel_type, engine_id, price, created_at, modified_at) 
+	values ($1,$2,$3,$4,$5,$6,$7,$8) 
 	returning id, name, year, brand, fuel_type, engine_id, price, created_at, modified_at`
 
 	err := s.db.QueryRowContext(ctx, query,
-		uuid.New(),
 		carReq.Name,
 		carReq.Year,
 		carReq.Brand,

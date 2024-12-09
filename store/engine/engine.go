@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	"fmt"
 
-	"github.com/google/uuid"
 	"github.com/winterscar922/carZone/models"
 )
 
@@ -13,11 +12,11 @@ type Store struct {
 	Db *sql.DB
 }
 
-func open(db *sql.DB) Store {
+func Open(db *sql.DB) Store {
 	return Store{Db: db}
 }
 
-func (s Store) GetEngineById(ctx context.Context, id uuid.UUID) (models.Engine, error) {
+func (s Store) GetEngineById(ctx context.Context, id int) (models.Engine, error) {
 	var engine models.Engine
 	query := `select * from engine where engine_id = $1`
 	err := s.Db.QueryRowContext(ctx, query, id).Scan(&engine)
@@ -32,7 +31,7 @@ func (s Store) GetEngineById(ctx context.Context, id uuid.UUID) (models.Engine, 
 	return engine, nil
 }
 
-func (s Store) CheckEngineById(ctx context.Context, id uuid.UUID) (bool, error) {
+func (s Store) CheckEngineById(ctx context.Context, id int) (bool, error) {
 	var exists bool
 	query := `select 1 from engine where engine_id = $1 limit 1`
 	err := s.Db.QueryRowContext(ctx, query, id).Scan(&exists)

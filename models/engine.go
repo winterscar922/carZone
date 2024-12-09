@@ -2,15 +2,13 @@ package models
 
 import (
 	"errors"
-
-	"github.com/google/uuid"
 )
 
 type Engine struct {
-	EngineId       uuid.UUID `json:"engine_id"`
-	Displacement   int64     `json:"displacement"`
-	CylindersCount int64     `json:"cylinders_count"`
-	CarRange       int64     `json:"car_range"`
+	EngineId       int   `json:"engine_id"`
+	Displacement   int64 `json:"displacement"`
+	CylindersCount int64 `json:"cylinders_count"`
+	CarRange       int64 `json:"car_range"`
 }
 
 type EngineRequest struct {
