@@ -12,21 +12,21 @@ import (
 )
 
 type Store struct {
-	db *sql.DB
+	Db *sql.DB
 }
 
-func Open(db *sql.DB) Store {
-	return Store{db: db}
+func Open(db *sql.DB) *Store {
+	return &Store{Db: db}
 }
 
-func (s Store) InsertCar(ctx context.Context, carReq models.CarRequest) (models.Car, error) {
+func (s *Store) InsertCar(ctx context.Context, carReq models.CarRequest) (models.Car, error) {
 	var car models.Car
 
 	// verify if engine id is present or not in engine table
 	var engine_id = carReq.Engine.EngineId
 
 	if engine_id != 0 {
-		engineStore := engineDataStore.Store{Db: s.db}
+		engineStore := engineDataStore.Store{Db: s.Db}
 		exists, err := engineStore.CheckEngineById(ctx, engine_id)
 		if err != nil {
 			return models.Car{}, err
@@ -40,7 +40,7 @@ func (s Store) InsertCar(ctx context.Context, carReq models.CarRequest) (models.
 	values ($1,$2,$3,$4,$5,$6,$7,$8) 
 	returning id, name, year, brand, fuel_type, engine_id, price, created_at, modified_at`
 
-	err := s.db.QueryRowContext(ctx, query,
+	err := s.Db.QueryRowContext(ctx, query,
 		carReq.Name,
 		carReq.Year,
 		carReq.Brand,
@@ -57,7 +57,7 @@ func (s Store) InsertCar(ctx context.Context, carReq models.CarRequest) (models.
 		&car.Engine.EngineId,
 		&car.Price,
 		&car.CreatedAt,
-		&car.ModifiedAt,
+		&car.UpdatedAt,
 	)
 
 	if err != nil {
@@ -66,19 +66,36 @@ func (s Store) InsertCar(ctx context.Context, carReq models.CarRequest) (models.
 	return car, nil
 }
 
-func (s Store) UpdateCar(ctx context.Context, carReq models.CarRequest) (models.Car, error) {
+func (s *Store) UpdateCar(ctx context.Context, carReq models.CarRequest) (models.Car, error) {
 	return models.Car{}, nil
 }
 
-func (s Store) DeleteCar(ctx context.Context, id int) error {
+func (s *Store) DeleteCar(ctx context.Context, id int) error {
 	return nil
 }
 
-func (s Store) GetCarById(ctx context.Context, id int) (models.Car, error) {
+func (s *Store) GetCarById(ctx context.Context, id int) (models.Car, error) {
 	var car models.Car
-	query := `select * from car where id = $1`
+	query := `select c.id, c.name, c.year, c.brand, c.fuel_type, c.price, c.created_at, c.updated_at, c.engine_id, e.displacement, e.no_of_cylinders, e.car_range, e.created_at, e.updated_at from car c 
+	left join engine e on e.id = c.id
+	where c.id = $1`
 
-	err := s.db.QueryRowContext(ctx, query, id).Scan(&car)
+	err := s.Db.QueryRowContext(ctx, query, id).Scan(
+		&car.CarId,
+		&car.Name,
+		&car.Year,
+		&car.Brand,
+		&car.FuelType,
+		&car.Price,
+		&car.CreatedAt,
+		&car.UpdatedAt,
+		&car.Engine.EngineId,
+		&car.Engine.Displacement,
+		&car.Engine.CylindersCount,
+		&car.Engine.CarRange,
+		&car.Engine.CreatedAt,
+		&car.Engine.UpdatedAt,
+	)
 
 	if err != nil {
 		return models.Car{}, errors.New(fmt.Sprintf("error while fetching car with id - %d", id))
@@ -86,6 +103,6 @@ func (s Store) GetCarById(ctx context.Context, id int) (models.Car, error) {
 	return car, nil
 }
 
-func (s Store) GetCarByBrand(ctx context.Context, brand string) ([]models.Car, error) {
+func (s *Store) GetCarByBrand(ctx context.Context, brand string) ([]models.Car, error) {
 	return []models.Car{}, nil
 }

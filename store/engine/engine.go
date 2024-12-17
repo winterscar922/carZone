@@ -12,14 +12,21 @@ type Store struct {
 	Db *sql.DB
 }
 
-func Open(db *sql.DB) Store {
-	return Store{Db: db}
+func Open(db *sql.DB) *Store {
+	return &Store{Db: db}
 }
 
-func (s Store) GetEngineById(ctx context.Context, id int) (models.Engine, error) {
+func (s *Store) GetEngineById(ctx context.Context, id int) (models.Engine, error) {
 	var engine models.Engine
-	query := `select * from engine where engine_id = $1`
-	err := s.Db.QueryRowContext(ctx, query, id).Scan(&engine)
+	query := `select * from engine where id = $1`
+	err := s.Db.QueryRowContext(ctx, query, id).Scan(
+		&engine.EngineId,
+		&engine.CarRange,
+		&engine.CylindersCount,
+		&engine.Displacement,
+		&engine.CreatedAt,
+		&engine.UpdatedAt,
+	)
 
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -31,7 +38,7 @@ func (s Store) GetEngineById(ctx context.Context, id int) (models.Engine, error)
 	return engine, nil
 }
 
-func (s Store) CheckEngineById(ctx context.Context, id int) (bool, error) {
+func (s *Store) CheckEngineById(ctx context.Context, id int) (bool, error) {
 	var exists bool
 	query := `select 1 from engine where engine_id = $1 limit 1`
 	err := s.Db.QueryRowContext(ctx, query, id).Scan(&exists)

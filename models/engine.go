@@ -2,13 +2,16 @@ package models
 
 import (
 	"errors"
+	"time"
 )
 
 type Engine struct {
-	EngineId       int   `json:"engine_id"`
-	Displacement   int64 `json:"displacement"`
-	CylindersCount int64 `json:"cylinders_count"`
-	CarRange       int64 `json:"car_range"`
+	EngineId       int       `json:"engine_id"`
+	Displacement   int64     `json:"displacement"`
+	CylindersCount int64     `json:"cylinders_count"`
+	CarRange       int64     `json:"car_range"`
+	CreatedAt      time.Time `json:"created_at"`
+	UpdatedAt      time.Time `json:"updated_at"`
 }
 
 type EngineRequest struct {

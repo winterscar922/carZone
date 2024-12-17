@@ -1,6 +1,8 @@
 package main
 
 import (
+	//"database/sql"
+
 	"database/sql"
 	"fmt"
 	"log"
@@ -31,6 +33,8 @@ func main() {
 	carStore := carStore.Open(db)
 	engineStore := engineStore.Open(db)
 
+	fmt.Println(carStore)
+
 	carService := carService.NewService(carStore)
 	engineService := engineService.NewService(engineStore)
 
@@ -48,6 +52,8 @@ func main() {
 	router.HandleFunc("/engine/{id}", engineController.GetEngineById).Methods("GET")
 
 	port := os.Getenv("DB_PORT")
+
+	fmt.Println(port)
 
 	if port == "" {
 		port = "8080"

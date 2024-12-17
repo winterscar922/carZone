@@ -6,15 +6,15 @@ import (
 )
 
 type Car struct {
-	CarId      int       `json:"car_id"`
-	Name       string    `json:"name"`
-	Year       time.Time `json:"year"`
-	Brand      string    `json:"brand"`
-	FuelType   string    `json:"fuel_type"`
-	Engine     Engine    `json:"engine"`
-	Price      int64     `json:"price"`
-	CreatedAt  time.Time `json:"created_at"`
-	ModifiedAt time.Time `json:"modified_at"`
+	CarId     int       `json:"car_id"`
+	Name      string    `json:"name"`
+	Year      string    `json:"year"`
+	Brand     string    `json:"brand"`
+	FuelType  string    `json:"fuel_type"`
+	Engine    Engine    `json:"engine"`
+	Price     float64   `json:"price"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
 }
 
 type CarRequest struct {

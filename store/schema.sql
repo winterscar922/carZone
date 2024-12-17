@@ -10,7 +10,7 @@ TRUNCATE TABLE engine;
 
 -- Create engine table
 CREATE TABLE IF NOT EXISTS engine (
-    id INT AUTO_INCREMENT PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
     displacement INT NOT NULL,
     no_of_cylinders INT NOT NULL,
     car_range INT NOT NULL,
@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS engine (
 );
 
 CREATE TABLE IF NOT EXISTS car (
-    id INT AUTO_INCREMENT PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     year VARCHAR(4) NOT NULL,
     brand VARCHAR(255) NOT NULL,
@@ -44,12 +44,12 @@ VALUES
     (1, 2000, 4, 600),
     (2, 1600, 4, 550),
     (3, 3000, 6, 700),
-    (4, 1800, 4, 500);
+    (4, 1800, 4, 10000);
 
 -- Insert dummy data into the car table
 INSERT INTO car (id, name, year, brand, fuel_type, engine_id, price)
 VALUES
-    (10, 'Honda Civic', '2023', 'Honda', 'Gasoline', 1, 25000.00),
-    (11, 'Toyota Corolla', '2022', 'Toyota', 'Gasoline', 2, 22000.00),
-    (12, 'Ford Mustang', '2024', 'Ford', 'Gasoline', 3, 40000.00),
-    (13, 'BMW 3 Series', '2023', 'BMW', 'Gasoline', 4, 35000.00);
+    (1, 'Honda Civic', '2023', 'Honda', 'Gasoline', 1, 25000.00),
+    (2, 'Toyota Corolla', '2022', 'Toyota', 'Gasoline', 2, 22000.00),
+    (3, 'Ford Mustang', '2024', 'Ford', 'Gasoline', 3, 40000.00),
+    (4, 'BMW 3 Series', '2023', 'BMW', 'Gasoline', 4, 35000.00);

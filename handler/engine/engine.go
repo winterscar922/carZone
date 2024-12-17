@@ -17,7 +17,7 @@ func NewEngineHandler(service service.EngineServiceInterface) *EngineHandler {
 	return &EngineHandler{service: service}
 }
 
-func (h EngineHandler) GetEngineById(w http.ResponseWriter, r *http.Request) {
+func (h *EngineHandler) GetEngineById(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	vars := mux.Vars(r)
 	id, err := strconv.Atoi(vars["id"])
