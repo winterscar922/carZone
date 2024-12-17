@@ -2,7 +2,6 @@ package car
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"strconv"
 
@@ -19,15 +18,9 @@ func NewCarHandler(service service.CarServiceInterface) *CarHandler {
 }
 
 func (h *CarHandler) GetCarById(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("went inside get car()")
 	ctx := r.Context()
 	vars := mux.Vars(r)
-	fmt.Println("var id is -->")
-	fmt.Println(vars["id"])
 	id, err := strconv.Atoi(vars["id"])
-
-	fmt.Println("id is ")
-	fmt.Println(id)
 
 	if err != nil {
 		http.Error(w, "Invalid ID format", http.StatusBadRequest)
@@ -36,8 +29,6 @@ func (h *CarHandler) GetCarById(w http.ResponseWriter, r *http.Request) {
 
 	res, err := h.service.GetCarById(ctx, id)
 
-	fmt.Println("res got is")
-	fmt.Println(res)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return

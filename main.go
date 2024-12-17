@@ -1,8 +1,6 @@
 package main
 
 import (
-	//"database/sql"
-
 	"database/sql"
 	"fmt"
 	"log"
