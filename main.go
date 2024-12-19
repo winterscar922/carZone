@@ -31,8 +31,6 @@ func main() {
 	carStore := carStore.Open(db)
 	engineStore := engineStore.Open(db)
 
-	fmt.Println(carStore)
-
 	carService := carService.NewService(carStore)
 	engineService := engineService.NewService(engineStore)
 
@@ -46,12 +44,15 @@ func main() {
 
 	router := mux.NewRouter()
 
+	// car handlers
 	router.HandleFunc("/car/{id}", carController.GetCarById).Methods("GET")
+	router.HandleFunc("/car", carController.CreateCar).Methods("POST")
+
+	// engine handlers
 	router.HandleFunc("/engine/{id}", engineController.GetEngineById).Methods("GET")
+	router.HandleFunc("/engine", engineController.CreateEngine).Methods("POST")
 
 	port := os.Getenv("DB_PORT")
-
-	fmt.Println(port)
 
 	if port == "" {
 		port = "8080"

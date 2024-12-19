@@ -15,17 +15,17 @@ func InitDb() {
 
 	fmt.Println(connStr)
 
-	temp, err := sql.Open("postgres", connStr)
+	pgdb, err := sql.Open("postgres", connStr)
 	if err != nil {
 		log.Fatal("error while opening database connection!")
 	}
 
-	if temp.Ping() != nil {
+	if pgdb.Ping() != nil {
 		log.Fatal("error while connecting to database!")
 	}
 	fmt.Println("connected to database successfully!")
 
-	db = temp
+	db = pgdb
 }
 
 func GetDb() *sql.DB {

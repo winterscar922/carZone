@@ -6,7 +6,7 @@ import (
 )
 
 type Engine struct {
-	EngineId       int       `json:"engine_id"`
+	EngineId       int64     `json:"engine_id"`
 	Displacement   int64     `json:"displacement"`
 	CylindersCount int64     `json:"cylinders_count"`
 	CarRange       int64     `json:"car_range"`

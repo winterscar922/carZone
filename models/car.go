@@ -2,28 +2,29 @@ package models
 
 import (
 	"errors"
+	"strconv"
 	"time"
 )
 
 type Car struct {
-	CarId     int       `json:"car_id"`
+	CarId     int64     `json:"car_id"`
 	Name      string    `json:"name"`
 	Year      string    `json:"year"`
 	Brand     string    `json:"brand"`
 	FuelType  string    `json:"fuel_type"`
 	Engine    Engine    `json:"engine"`
-	Price     float64   `json:"price"`
+	Price     int64     `json:"price"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
 type CarRequest struct {
-	Name     string    `json:"name"`
-	Year     time.Time `json:"year"`
-	Brand    string    `json:"brand"`
-	FuelType string    `json:"fuel_type"`
-	Engine   Engine    `json:"engine"`
-	Price    int64     `json:"price"`
+	Name     string `json:"name"`
+	Year     string `json:"year"`
+	Brand    string `json:"brand"`
+	FuelType string `json:"fuel_type"`
+	EngineId int64  `json:"engine_id"`
+	Price    int64  `json:"price"`
 }
 
 func ValidateCarRequest(carRequest CarRequest) error {
@@ -39,7 +40,7 @@ func ValidateCarRequest(carRequest CarRequest) error {
 	if err := ValidateFuelTypes(carRequest.FuelType); err != nil {
 		return err
 	}
-	if err := ValidateEngine(carRequest.Engine); err != nil {
+	if err := ValidateEngine(carRequest.EngineId); err != nil {
 		return err
 	}
 	if err := ValidatePrice(carRequest.Price); err != nil {
@@ -55,8 +56,12 @@ func ValidateName(name string) error {
 	return nil
 }
 
-func ValidateYear(dateTime time.Time) error {
-	if dateTime.Year() <= 1800 || dateTime.Year() > time.Now().Year() {
+func ValidateYear(dateTime string) error {
+	year, err := strconv.Atoi(dateTime)
+	if err != nil {
+		return errors.New("error while converting year")
+	}
+	if year <= 1800 || year > time.Now().Year() {
 		return errors.New("year must be between 1800 and current year")
 	}
 	return nil
@@ -90,18 +95,9 @@ func ValidateFuelTypes(fuelType string) error {
 	return errors.New(errMessage)
 }
 
-func ValidateEngine(engine Engine) error {
-	if engine.EngineId == 0 {
+func ValidateEngine(engineId int64) error {
+	if engineId == 0 {
 		return errors.New("engine id is required")
-	}
-	if engine.Displacement <= 0 {
-		return errors.New("displacement must be greater thatn zero")
-	}
-	if engine.CylindersCount <= 0 {
-		return errors.New("cylinder count must be greater thatn zero")
-	}
-	if engine.CarRange <= 0 {
-		return errors.New("car range must be greater thatn zero")
 	}
 	return nil
 }

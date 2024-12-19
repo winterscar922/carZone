@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"time"
 
 	"github.com/winterscar922/carZone/models"
 )
@@ -16,7 +17,32 @@ func Open(db *sql.DB) *Store {
 	return &Store{Db: db}
 }
 
-func (s *Store) GetEngineById(ctx context.Context, id int) (models.Engine, error) {
+func (s *Store) CreateEngine(ctx context.Context, engineReq models.EngineRequest) (models.Engine, error) {
+	var newEngine models.Engine
+
+	query := `insert into engine (displacement, car_range, cylinders_count, created_at, updated_at)
+				values ($1,$2,$3,$4,$5)
+				returning id, displacement, car_range, cylinders_count, created_at, updated_at`
+
+	err := s.Db.QueryRowContext(ctx, query, engineReq.Displacement, engineReq.CarRange,
+		engineReq.CylindersCount, time.Now(), time.Now()).Scan(
+		&newEngine.EngineId,
+		&newEngine.Displacement,
+		&newEngine.CarRange,
+		&newEngine.CylindersCount,
+		&newEngine.CreatedAt,
+		&newEngine.UpdatedAt,
+	)
+
+	if err != nil {
+		return models.Engine{}, fmt.Errorf("error inserting car")
+	}
+
+	fmt.Println(newEngine)
+	return newEngine, nil
+}
+
+func (s *Store) GetEngineById(ctx context.Context, id int64) (models.Engine, error) {
 	var engine models.Engine
 	query := `select * from engine where id = $1`
 	err := s.Db.QueryRowContext(ctx, query, id).Scan(
@@ -36,16 +62,4 @@ func (s *Store) GetEngineById(ctx context.Context, id int) (models.Engine, error
 	}
 
 	return engine, nil
-}
-
-func (s *Store) CheckEngineById(ctx context.Context, id int) (bool, error) {
-	var exists bool
-	query := `select 1 from engine where engine_id = $1 limit 1`
-	err := s.Db.QueryRowContext(ctx, query, id).Scan(&exists)
-
-	if err != nil {
-		return false, fmt.Errorf("error fetching engine with id %d: %w", id, err)
-	}
-
-	return exists, nil
 }
