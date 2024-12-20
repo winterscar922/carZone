@@ -127,3 +127,18 @@ func (h *CarHandler) DeleteCar(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 }
+
+func (h *CarHandler) GetAllCars(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	cars, err := h.service.GetAllCars(ctx)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	if err := json.NewEncoder(w).Encode(cars); err != nil {
+		http.Error(w, "Error encoding response", http.StatusInternalServerError)
+	}
+}

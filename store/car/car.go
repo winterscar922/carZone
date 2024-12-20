@@ -144,7 +144,7 @@ func (s *Store) DeleteCar(ctx context.Context, id int64) error {
 func (s *Store) GetCarById(ctx context.Context, id int64) (models.Car, error) {
 	var car models.Car
 	query := `select c.id, c.name, c.year, c.brand, c.fuel_type, c.price, c.created_at, c.updated_at, c.engine_id, e.displacement, e.cylinders_count, e.car_range, e.created_at, e.updated_at from car c 
-	left join engine e on e.id = c.id
+	left join engine e on e.id = c.engine_id
 	where c.id = $1`
 
 	err := s.Db.QueryRowContext(ctx, query, id).Scan(
@@ -175,4 +175,40 @@ func (s *Store) GetCarById(ctx context.Context, id int64) (models.Car, error) {
 
 func (s *Store) GetCarByBrand(ctx context.Context, brand string) ([]models.Car, error) {
 	return []models.Car{}, nil
+}
+
+func (s *Store) GetAllCars(ctx context.Context) ([]models.Car, error) {
+	var cars []models.Car
+	query := `select c.id, c.name, c.year, c.brand, c.fuel_type, c.price, c.created_at, c.updated_at, c.engine_id, e.displacement, e.cylinders_count, e.car_range, e.created_at, e.updated_at from car c 
+	left join engine e on e.id = c.engine_id`
+
+	rows, err := s.Db.QueryContext(ctx, query)
+
+	if err != nil {
+		return []models.Car{}, errors.New("error while fetching cars")
+	}
+
+	for rows.Next() {
+		var car models.Car
+
+		rows.Scan(
+			&car.CarId,
+			&car.Name,
+			&car.Year,
+			&car.Brand,
+			&car.FuelType,
+			&car.Price,
+			&car.CreatedAt,
+			&car.UpdatedAt,
+			&car.Engine.EngineId,
+			&car.Engine.Displacement,
+			&car.Engine.CylindersCount,
+			&car.Engine.CarRange,
+			&car.Engine.CreatedAt,
+			&car.Engine.UpdatedAt,
+		)
+
+		cars = append(cars, car)
+	}
+	return cars, nil
 }

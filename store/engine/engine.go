@@ -135,3 +135,30 @@ func (s *Store) DeleteEngine(ctx context.Context, id int64) error {
 	tx.Commit()
 	return nil
 }
+
+func (s *Store) GetAllEngines(ctx context.Context) ([]models.Engine, error) {
+	var engines []models.Engine
+	query := `select * from engine`
+
+	rows, err := s.Db.QueryContext(ctx, query)
+
+	if err != nil {
+		return []models.Engine{}, errors.New("error while fetching engines")
+	}
+
+	for rows.Next() {
+		var engine models.Engine
+
+		rows.Scan(
+			&engine.EngineId,
+			&engine.CarRange,
+			&engine.CylindersCount,
+			&engine.Displacement,
+			&engine.CreatedAt,
+			&engine.UpdatedAt,
+		)
+
+		engines = append(engines, engine)
+	}
+	return engines, nil
+}

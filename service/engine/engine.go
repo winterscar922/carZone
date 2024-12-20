@@ -16,33 +16,21 @@ func NewService(store store.EngineStoreInterface) *EngineService {
 }
 
 func (s *EngineService) GetEngineById(ctx context.Context, id int64) (models.Engine, error) {
-	engine, err := s.store.GetEngineById(ctx, id)
-	if err != nil {
-		return models.Engine{}, err
-	}
-	return engine, nil
+	return s.store.GetEngineById(ctx, id)
 }
 
 func (s *EngineService) CreateEngine(ctx context.Context, engineReq models.EngineRequest) (models.Engine, error) {
-	engine, err := s.store.CreateEngine(ctx, engineReq)
-	if err != nil {
-		return models.Engine{}, err
-	}
-	return engine, nil
+	return s.store.CreateEngine(ctx, engineReq)
 }
 
 func (s *EngineService) UpdateEngine(ctx context.Context, engineReq models.EngineRequest, id int64) error {
-	err := s.store.UpdateEngine(ctx, engineReq, id)
-	if err != nil {
-		return err
-	}
-	return nil
+	return s.store.UpdateEngine(ctx, engineReq, id)
 }
 
 func (s *EngineService) DeleteEngine(ctx context.Context, id int64) error {
-	err := s.store.DeleteEngine(ctx, id)
-	if err != nil {
-		return err
-	}
-	return nil
+	return s.store.DeleteEngine(ctx, id)
+}
+
+func (s *EngineService) GetAllEngines(ctx context.Context) ([]models.Engine, error) {
+	return s.store.GetAllEngines(ctx)
 }

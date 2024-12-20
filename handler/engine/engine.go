@@ -125,3 +125,19 @@ func (h *EngineHandler) DeleteEngine(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 }
+
+func (h *EngineHandler) GetAllEngines(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	engines, err := h.service.GetAllEngines(ctx)
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	if err := json.NewEncoder(w).Encode(engines); err != nil {
+		http.Error(w, "Error encoding response", http.StatusInternalServerError)
+	}
+}
