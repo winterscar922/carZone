@@ -53,8 +53,8 @@ func main() {
 	// engine handlers
 	router.HandleFunc("/engine/{id}", engineController.GetEngineById).Methods("GET")
 	router.HandleFunc("/engine", engineController.CreateEngine).Methods("POST")
-	// router.HandleFunc("/engine/{id}", engineController.UpdateEngine).Methods("PUT")
-	// router.HandleFunc("/engine/{id}", engineController.DeleteEngine).Methods("DELETE")
+	router.HandleFunc("/engine/{id}", engineController.UpdateEngine).Methods("PUT")
+	router.HandleFunc("/engine/{id}", engineController.DeleteEngine).Methods("DELETE")
 
 	port := os.Getenv("DB_PORT")
 

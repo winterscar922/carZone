@@ -30,3 +30,19 @@ func (s *EngineService) CreateEngine(ctx context.Context, engineReq models.Engin
 	}
 	return engine, nil
 }
+
+func (s *EngineService) UpdateEngine(ctx context.Context, engineReq models.EngineRequest, id int64) error {
+	err := s.store.UpdateEngine(ctx, engineReq, id)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *EngineService) DeleteEngine(ctx context.Context, id int64) error {
+	err := s.store.DeleteEngine(ctx, id)
+	if err != nil {
+		return err
+	}
+	return nil
+}

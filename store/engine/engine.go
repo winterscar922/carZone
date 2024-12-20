@@ -3,6 +3,7 @@ package engine
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 	"time"
 
@@ -43,7 +44,9 @@ func (s *Store) CreateEngine(ctx context.Context, engineReq models.EngineRequest
 
 func (s *Store) GetEngineById(ctx context.Context, id int64) (models.Engine, error) {
 	var engine models.Engine
-	query := `select * from engine where id = $1`
+	query := `select id, car_range, cylinders_count, displacement, created_at, updated_at 
+				from engine where id = $1`
+
 	err := s.Db.QueryRowContext(ctx, query, id).Scan(
 		&engine.EngineId,
 		&engine.CarRange,
@@ -61,4 +64,74 @@ func (s *Store) GetEngineById(ctx context.Context, id int64) (models.Engine, err
 	}
 
 	return engine, nil
+}
+
+func (s *Store) UpdateEngine(ctx context.Context, engineReq models.EngineRequest, id int64) error {
+	query := `update engine
+				set displacement=$1, cylinders_count=$2, car_range=$3, updated_at=$4
+				where id = $5`
+
+	tx, err := s.Db.BeginTx(ctx, nil)
+
+	if err != nil {
+		return errors.New(fmt.Sprintf("error while creating transaction for updating car with id - %d", id))
+	}
+
+	res, err := s.Db.ExecContext(ctx, query,
+		engineReq.Displacement,
+		engineReq.CylindersCount,
+		engineReq.CarRange,
+		time.Now(),
+		id)
+
+	if err != nil {
+		tx.Rollback()
+		return errors.New(fmt.Sprintf("error while updating engine with id - %d", id))
+	}
+
+	rowsAffected, _ := res.RowsAffected()
+
+	if rowsAffected > 1 {
+		tx.Rollback()
+		return errors.New(fmt.Sprintf("multiple rows were effected while updating engine with id - %d, rollbacking changes", id))
+	}
+
+	if rowsAffected == 0 {
+		return errors.New(fmt.Sprintf("engine with id - %d not found", id))
+	}
+
+	tx.Commit()
+	return nil
+}
+
+func (s *Store) DeleteEngine(ctx context.Context, id int64) error {
+	query := `delete from engine
+				where id = $1`
+
+	tx, err := s.Db.BeginTx(ctx, nil)
+
+	if err != nil {
+		return errors.New(fmt.Sprintf("error while creating transaction for deleting engine with id - %d", id))
+	}
+
+	res, err := s.Db.ExecContext(ctx, query, id)
+
+	if err != nil {
+		tx.Rollback()
+		return errors.New(fmt.Sprintf("error while deleting engine with id - %d", id))
+	}
+
+	rowsAffected, _ := res.RowsAffected()
+
+	if rowsAffected > 1 {
+		tx.Rollback()
+		return errors.New(fmt.Sprintf("multiple rows were effected while deleting engine with id - %d, rollbacking changes", id))
+	}
+
+	if rowsAffected == 0 {
+		return errors.New(fmt.Sprintf("engine with id - %d not found", id))
+	}
+
+	tx.Commit()
+	return nil
 }
