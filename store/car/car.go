@@ -61,11 +61,83 @@ func (s *Store) CreateCar(ctx context.Context, carReq models.CarRequest) (models
 	return car, nil
 }
 
-func (s *Store) UpdateCar(ctx context.Context, carReq models.CarRequest) (models.Car, error) {
-	return models.Car{}, nil
+func (s *Store) UpdateCar(ctx context.Context, carReq models.CarRequest, id int64) error {
+	tx, err := s.Db.BeginTx(ctx, nil)
+
+	if err != nil {
+		return errors.New(fmt.Sprintf("error while creating transaction for updating car with id - %d", id))
+	}
+
+	engineStore := engineDataStore.Store{Db: s.Db}
+	_, err = engineStore.GetEngineById(ctx, carReq.EngineId)
+
+	if err != nil {
+		return err
+	}
+
+	query := `update car
+				set name=$1, year=$2, brand=$3, fuel_type=$4, engine_id=$5, price=$6, updated_at=$7
+				where id = $8`
+
+	res, err := s.Db.ExecContext(ctx, query,
+		carReq.Name,
+		carReq.Year,
+		carReq.Brand,
+		carReq.FuelType,
+		carReq.EngineId,
+		carReq.Price,
+		time.Now(),
+		id)
+
+	if err != nil {
+		tx.Rollback()
+		return errors.New(fmt.Sprintf("error while updating car with id - %d", id))
+	}
+
+	rowsAffected, _ := res.RowsAffected()
+
+	if rowsAffected > 1 {
+		tx.Rollback()
+		return errors.New(fmt.Sprintf("multiple rows were effected while updating car with id - %d, rollbacking changes", id))
+	}
+
+	if rowsAffected == 0 {
+		return errors.New(fmt.Sprintf("car with id - %d not found", id))
+	}
+
+	tx.Commit()
+	return nil
 }
 
 func (s *Store) DeleteCar(ctx context.Context, id int64) error {
+	query := `delete from car
+				where id = $1`
+
+	tx, err := s.Db.BeginTx(ctx, nil)
+
+	if err != nil {
+		return errors.New(fmt.Sprintf("error while creating transaction for deleting car with id - %d", id))
+	}
+
+	res, err := s.Db.ExecContext(ctx, query, id)
+
+	if err != nil {
+		tx.Rollback()
+		return errors.New(fmt.Sprintf("error while deleting car with id - %d", id))
+	}
+
+	rowsAffected, _ := res.RowsAffected()
+
+	if rowsAffected > 1 {
+		tx.Rollback()
+		return errors.New(fmt.Sprintf("multiple rows were effected while deleting car with id - %d, rollbacking changes", id))
+	}
+
+	if rowsAffected == 0 {
+		return errors.New(fmt.Sprintf("car with id - %d not found", id))
+	}
+
+	tx.Commit()
 	return nil
 }
 
@@ -93,6 +165,9 @@ func (s *Store) GetCarById(ctx context.Context, id int64) (models.Car, error) {
 	)
 
 	if err != nil {
+		if err == sql.ErrNoRows {
+			return models.Car{}, errors.New(fmt.Sprintf("car with id - %d not found", id))
+		}
 		return models.Car{}, errors.New(fmt.Sprintf("error while fetching car with id - %d", id))
 	}
 	return car, nil

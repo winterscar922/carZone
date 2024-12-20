@@ -9,6 +9,8 @@ import (
 type CarStoreInterface interface {
 	GetCarById(ctx context.Context, id int64) (models.Car, error)
 	CreateCar(ctx context.Context, carReq models.CarRequest) (models.Car, error)
+	UpdateCar(ctx context.Context, carReq models.CarRequest, id int64) error
+	DeleteCar(ctx context.Context, id int64) error
 }
 
 type EngineStoreInterface interface {

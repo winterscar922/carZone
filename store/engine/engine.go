@@ -38,7 +38,6 @@ func (s *Store) CreateEngine(ctx context.Context, engineReq models.EngineRequest
 		return models.Engine{}, fmt.Errorf("error inserting car")
 	}
 
-	fmt.Println(newEngine)
 	return newEngine, nil
 }
 

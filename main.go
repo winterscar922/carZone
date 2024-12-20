@@ -47,10 +47,14 @@ func main() {
 	// car handlers
 	router.HandleFunc("/car/{id}", carController.GetCarById).Methods("GET")
 	router.HandleFunc("/car", carController.CreateCar).Methods("POST")
+	router.HandleFunc("/car/{id}", carController.UpdateCar).Methods("PUT")
+	router.HandleFunc("/car/{id}", carController.DeleteCar).Methods("DELETE")
 
 	// engine handlers
 	router.HandleFunc("/engine/{id}", engineController.GetEngineById).Methods("GET")
 	router.HandleFunc("/engine", engineController.CreateEngine).Methods("POST")
+	// router.HandleFunc("/engine/{id}", engineController.UpdateEngine).Methods("PUT")
+	// router.HandleFunc("/engine/{id}", engineController.DeleteEngine).Methods("DELETE")
 
 	port := os.Getenv("DB_PORT")
 

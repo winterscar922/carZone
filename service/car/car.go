@@ -30,3 +30,19 @@ func (s *CarService) CreateCar(ctx context.Context, carReq models.CarRequest) (m
 	}
 	return car, nil
 }
+
+func (s *CarService) UpdateCar(ctx context.Context, carReq models.CarRequest, id int64) error {
+	err := s.store.UpdateCar(ctx, carReq, id)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *CarService) DeleteCar(ctx context.Context, id int64) error {
+	err := s.store.DeleteCar(ctx, id)
+	if err != nil {
+		return err
+	}
+	return nil
+}

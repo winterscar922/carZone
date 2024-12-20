@@ -2,7 +2,6 @@ package engine
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"strconv"
 
@@ -48,9 +47,15 @@ func (h *EngineHandler) CreateEngine(w http.ResponseWriter, r *http.Request) {
 	var engineReq models.EngineRequest
 	err := json.NewDecoder(r.Body).Decode(&engineReq)
 
-	fmt.Println(engineReq.CarRange)
-	fmt.Println(engineReq.Displacement)
-	fmt.Println(engineReq.CylindersCount)
+	if err != nil {
+		http.Error(w, "Invalid ID format", http.StatusBadRequest)
+		return
+	}
+
+	if err := models.ValidateEngineRequest(engineReq); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
 
 	res, err := h.service.CreateEngine(ctx, engineReq)
 	if err != nil {
