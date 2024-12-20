@@ -58,13 +58,10 @@ func main() {
 	router.HandleFunc("/engine/{id}", engineController.DeleteEngine).Methods("DELETE")
 	router.HandleFunc("/engines", engineController.GetAllEngines).Methods("GET")
 
-	port := os.Getenv("DB_PORT")
+	port := ":8080"
 
-	if port == "" {
-		port = "8080"
-	}
-
-	http.ListenAndServe(fmt.Sprintf(":%s", port), router)
+	fmt.Println(port)
+	http.ListenAndServe(port, router)
 }
 
 func executeSchema(db *sql.DB, schemaFile string) error {

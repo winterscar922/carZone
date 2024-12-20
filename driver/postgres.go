@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"os"
 
 	_ "github.com/lib/pq"
 )
@@ -11,7 +12,13 @@ import (
 var db *sql.DB
 
 func InitDb() {
-	connStr := "user=postgres port=5432 dbname=postgres password=winterscar sslmode=disable"
+	connStr := fmt.Sprintf("host=%s user=%s port=%s dbname=%s password=%s sslmode=disable",
+		os.Getenv("DB_HOST"),
+		os.Getenv("DB_USER"),
+		os.Getenv("DB_PORT"),
+		os.Getenv("DB_NAME"),
+		os.Getenv("DB_PASSWORD"),
+	)
 
 	fmt.Println(connStr)
 

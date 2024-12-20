@@ -1,3 +1,3 @@
 FROM postgres:latest
 
-EXPOSE 8081
+EXPOSE 5432
