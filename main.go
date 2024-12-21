@@ -12,6 +12,7 @@ import (
 	"github.com/winterscar922/carZone/driver"
 	carHandler "github.com/winterscar922/carZone/handler/car"
 	engineHandler "github.com/winterscar922/carZone/handler/engine"
+	middleware "github.com/winterscar922/carZone/middleware"
 	carService "github.com/winterscar922/carZone/service/car"
 	engineService "github.com/winterscar922/carZone/service/engine"
 	carStore "github.com/winterscar922/carZone/store/car"
@@ -44,23 +45,24 @@ func main() {
 
 	router := mux.NewRouter()
 
+	router.HandleFunc("/login", middleware.LoginHandler).Methods("POST")
+
 	// car handlers
-	router.HandleFunc("/car/{id}", carController.GetCarById).Methods("GET")
-	router.HandleFunc("/car", carController.CreateCar).Methods("POST")
-	router.HandleFunc("/car/{id}", carController.UpdateCar).Methods("PUT")
-	router.HandleFunc("/car/{id}", carController.DeleteCar).Methods("DELETE")
-	router.HandleFunc("/cars", carController.GetAllCars).Methods("GET")
+	router.HandleFunc("/car/{id}", middleware.JWTMiddleware(carController.GetCarById)).Methods("GET")
+	router.HandleFunc("/car", middleware.JWTMiddleware(carController.CreateCar)).Methods("POST")
+	router.HandleFunc("/car/{id}", middleware.JWTMiddleware(carController.UpdateCar)).Methods("PUT")
+	router.HandleFunc("/car/{id}", middleware.JWTMiddleware(carController.DeleteCar)).Methods("DELETE")
+	router.HandleFunc("/cars", middleware.JWTMiddleware(carController.GetAllCars)).Methods("GET")
 
 	// engine handlers
-	router.HandleFunc("/engine/{id}", engineController.GetEngineById).Methods("GET")
-	router.HandleFunc("/engine", engineController.CreateEngine).Methods("POST")
-	router.HandleFunc("/engine/{id}", engineController.UpdateEngine).Methods("PUT")
-	router.HandleFunc("/engine/{id}", engineController.DeleteEngine).Methods("DELETE")
-	router.HandleFunc("/engines", engineController.GetAllEngines).Methods("GET")
+	router.HandleFunc("/engine/{id}", middleware.JWTMiddleware(engineController.GetEngineById)).Methods("GET")
+	router.HandleFunc("/engine", middleware.JWTMiddleware(engineController.CreateEngine)).Methods("POST")
+	router.HandleFunc("/engine/{id}", middleware.JWTMiddleware(engineController.UpdateEngine)).Methods("PUT")
+	router.HandleFunc("/engine/{id}", middleware.JWTMiddleware(engineController.DeleteEngine)).Methods("DELETE")
+	router.HandleFunc("/engines", middleware.JWTMiddleware(engineController.GetAllEngines)).Methods("GET")
 
 	port := ":8080"
 
-	fmt.Println(port)
 	http.ListenAndServe(port, router)
 }
 

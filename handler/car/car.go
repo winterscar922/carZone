@@ -130,6 +130,7 @@ func (h *CarHandler) DeleteCar(w http.ResponseWriter, r *http.Request) {
 
 func (h *CarHandler) GetAllCars(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
+
 	cars, err := h.service.GetAllCars(ctx)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusNotFound)
